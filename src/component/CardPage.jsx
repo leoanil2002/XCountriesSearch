@@ -3,9 +3,10 @@ import FlagCard from "./FlagCard";
 import "./CardPage.css";
 
 const CardPage = () => {
-  const apiUrl = "https://restcountries.com/v3.1/all";
+  const apiUrl = "https://xcountries-backend.azurewebsites.net/all"; // Use this API URL
   const [data, setData] = useState([]);
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getCountries = async () => {
@@ -14,11 +15,19 @@ const CardPage = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data1 = await response.json();
-        console.log("Fetched Countries Data:", data1);
-        setData(data1);
+        const result = await response.json();
+        console.log("Fetched Countries Data:", result);
+
+        // Transform data to match the structure used in the application
+        const transformedData = result.map((country) => ({
+          name: country.countryName,
+          flag: country.flagImage,
+        }));
+        setData(transformedData);
+        setLoading(false); // Stop loading once data is fetched
       } catch (error) {
         console.error(`Error fetching countries data: ${error.message}`);
+        setLoading(false); // Stop loading on error
       }
     };
     getCountries();
@@ -29,10 +38,9 @@ const CardPage = () => {
   };
 
   const filteredData = data.filter((ele) =>
-    ele.name && ele.name.common
-      ? ele.name.common.toLowerCase().includes(name.toLowerCase())
-      : false
+    ele.name.toLowerCase().includes(name.toLowerCase())
   );
+
   console.log("Filtered Data:", filteredData);
 
   return (
@@ -46,19 +54,22 @@ const CardPage = () => {
         />
       </div>
       <div className="cardPage">
-        {filteredData.length > 0 ? (
-          filteredData.map((ele) => (
-            <FlagCard
-              key={ele.cca3 || ele.name.common}
-              flag={ele.flags?.png}
-              name={ele.name?.common}
-              alth={ele.flag}
-            />
-          ))
-        ) : (
-          <p>Loading countries...</p>
-        )}
-      </div>
+  {data.length > 0 ? (
+    data
+      .filter((ele) => ele.name && ele.name.common && ele.name.common.toLowerCase().includes(name.toLowerCase()))
+      .map((ele) => (
+        <FlagCard
+          key={ele.cca3 || ele.name.common} // Use a unique key
+          flag={ele.flags?.png}
+          name={ele.name?.common}
+          alth={ele.flag}
+        />
+      ))
+  ) : (
+    <p>Loading countries...</p>
+  )}
+</div>
+
     </>
   );
 };
