@@ -1,7 +1,7 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import FlagCard from "./FlagCard";
 import "./CardPage.css";
+
 const CardPage = () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
   const [data, setData] = useState([]);
@@ -15,23 +15,26 @@ const CardPage = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data1 = await response.json();
+        console.log("Fetched Countries Data:", data1);
         setData(data1);
-        console.log(data1);
       } catch (error) {
-        console.error(`Error fetching data: ${error.message}`);
+        console.error(`Error fetching countries data: ${error.message}`);
       }
     };
     getCountries();
-    // fetch(apiUrl)
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     setData(data);
-    //   })
-    //   .catch((error) => console.error(`Error fetching data:${error.message}`));
   }, []);
+
   const handler = (e) => {
     setName(e.target.value);
   };
+
+  const filteredData = data.filter((ele) =>
+    ele.name && ele.name.common
+      ? ele.name.common.toLowerCase().includes(name.toLowerCase())
+      : false
+  );
+  console.log("Filtered Data:", filteredData);
+
   return (
     <>
       <div className="input-box-container">
@@ -43,22 +46,21 @@ const CardPage = () => {
         />
       </div>
       <div className="cardPage">
-        {data
-          .filter((ele) =>
-            ele.name.common.toLowerCase().includes(name.toLowerCase())
-          )
-          .map((ele) => {
-            return (
-              <FlagCard
-                key={`${ele.name.common}${Math.floor(Math.random() * 90) + 10}`}
-                flag={ele.flags.png}
-                name={ele.name.common}
-                alth={ele.flag}
-              />
-            );
-          })}
+        {filteredData.length > 0 ? (
+          filteredData.map((ele) => (
+            <FlagCard
+              key={ele.cca3 || ele.name.common}
+              flag={ele.flags?.png}
+              name={ele.name?.common}
+              alth={ele.flag}
+            />
+          ))
+        ) : (
+          <p>Loading countries...</p>
+        )}
       </div>
     </>
   );
 };
+
 export default CardPage;
