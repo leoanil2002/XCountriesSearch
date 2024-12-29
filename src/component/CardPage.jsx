@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FlagCard from "./FlagCard";
 import "./CardPage.css";
-import countries from "../countries.json";
+// import countries from "../countries.json";
 
 const CardPage = () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
@@ -9,7 +9,6 @@ const CardPage = () => {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    setData(countries);
     const getCountries = async () => {
       try {
         const response = await fetch(apiUrl);
@@ -18,13 +17,14 @@ const CardPage = () => {
         }
         const data1 = await response.json();
         setData(data1);
-        console.log(data1);
+        console.log(data1); // Confirm data structure here
       } catch (error) {
         console.error(`Error fetching data: ${error.message}`);
       }
     };
     getCountries();
   }, []);
+  
 
   const handler = (e) => {
     setName(e.target.value);
