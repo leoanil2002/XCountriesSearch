@@ -4,12 +4,26 @@ import "./CardPage.css";
 import countries from "../countries.json";
 
 const CardPage = () => {
+  const apiUrl = "https://restcountries.com/v3.1/all";
   const [data, setData] = useState([]);
   const [name, setName] = useState("");
 
   useEffect(() => {
-    // Load the data from the JSON file
     setData(countries);
+    const getCountries = async () => {
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data1 = await response.json();
+        setData(data1);
+        console.log(data1);
+      } catch (error) {
+        console.error(`Error fetching data: ${error.message}`);
+      }
+    };
+    getCountries();
   }, []);
 
   const handler = (e) => {
