@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="bigCard">
       <CardPage />
-      <FlagCard />
+      {/* <FlagCard /> */}
     </div>
   );
 }
